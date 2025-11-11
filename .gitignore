@@ -1,9 +1,16 @@
+# Arquivos de Build
 HELP.md
 target/
-.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Dependências do Maven/Gradle
+.mvn/wrapper/maven-wrapper.jar
+/build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# IDEs (IntelliJ, STS, VS Code, NetBeans)
 ### STS ###
 .apt_generated
 .classpath
@@ -25,9 +32,15 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
 ### VS Code ###
 .vscode/
+
+# Configurações de Segurança e Ambiente 🔒
+########################################
+# Ignora arquivos de configuração local com credenciais
+/src/main/resources/application.properties
+/src/main/resources/application.yml
+
+# Arquivo de variáveis de ambiente (MELHOR PRÁTICA)
+.env
