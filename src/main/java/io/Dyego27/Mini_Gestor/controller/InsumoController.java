@@ -26,7 +26,7 @@ public class InsumoController {
     // GET /api/insumos
     @GetMapping
     public ResponseEntity<List<Insumo>> listarInsumos() {
-        return ResponseEntity.ok(insumoService.buscarTodos()); // 200
+        return ResponseEntity.ok(insumoService.buscarTodos());
     }
 
     // GET /api/insumos/{id}
@@ -34,7 +34,7 @@ public class InsumoController {
     public ResponseEntity<Insumo> buscarInsumoPorId(@PathVariable Long id) {
         return insumoService.buscarPorId(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build()); // 404
+                .orElse(ResponseEntity.notFound().build());
     }
 
     // PUT /api/insumos/{id}
@@ -43,7 +43,7 @@ public class InsumoController {
         if (!insumoService.buscarPorId(id).isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        insumo.setId(id); // Garante que o ID da requisição é usado para atualizar o objeto
+        insumo.setId(id);
         return ResponseEntity.ok(insumoService.salvarInsumo(insumo));
     }
 
@@ -54,6 +54,6 @@ public class InsumoController {
             return ResponseEntity.notFound().build();
         }
         insumoService.deletarInsumo(id);
-        return ResponseEntity.noContent().build(); // 204
+        return ResponseEntity.noContent().build();
     }
 }
