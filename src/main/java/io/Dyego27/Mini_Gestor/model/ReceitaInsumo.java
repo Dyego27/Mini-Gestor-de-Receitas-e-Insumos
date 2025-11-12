@@ -1,6 +1,6 @@
 package io.Dyego27.Mini_Gestor.model;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties; // NOVO IMPORT!
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -15,8 +15,8 @@ public class ReceitaInsumo {
 
     @ManyToOne
     @JoinColumn(name = "receita_id")
+    @JsonIgnoreProperties("ingredientes")
     private Receita receita;
-
 
     @ManyToOne
     @JoinColumn(name = "insumo_id")

@@ -1,6 +1,7 @@
 package io.Dyego27.Mini_Gestor.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
@@ -18,5 +19,6 @@ public class Receita {
     private String modoPreparo;
 
     @OneToMany(mappedBy = "receita", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("receita")
     private List<ReceitaInsumo> ingredientes;
 }
