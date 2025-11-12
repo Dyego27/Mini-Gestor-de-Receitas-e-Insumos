@@ -1,5 +1,6 @@
 package io.Dyego27.Mini_Gestor.controller;
 
+import io.Dyego27.Mini_Gestor.dto.ReceitaRequestDTO;
 import io.Dyego27.Mini_Gestor.model.Receita;
 import io.Dyego27.Mini_Gestor.service.ReceitaService;
 import org.springframework.http.HttpStatus;
@@ -20,8 +21,10 @@ public class ReceitaController {
 
 
     @PostMapping
-    public ResponseEntity<Receita> criarReceita(@RequestBody Receita receita) {
-        Receita novaReceita = receitaService.salvarReceita(receita);
+    public ResponseEntity<Receita> criarReceita(@RequestBody ReceitaRequestDTO receitaDto) {
+
+        Receita novaReceita = receitaService.salvarReceita(receitaDto);
+
         return new ResponseEntity<>(novaReceita, HttpStatus.CREATED);
     }
 
@@ -51,12 +54,24 @@ public class ReceitaController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Receita> atualizarReceita(@PathVariable Long id, @RequestBody Receita receita) {
+    public ResponseEntity<Receita> atualizarReceita(
+            @PathVariable Long id,
+            @RequestBody ReceitaRequestDTO receitaDto) { // <- AGORA RECEBE O DTO
+
         if (!receitaService.buscarPorId(id).isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        receita.setId(id);
-        return ResponseEntity.ok(receitaService.salvarReceita(receita));
+
+
+        Receita receitaParaSalvar = receitaService.toEntity(receitaDto);
+
+
+        receitaParaSalvar.setId(id);
+
+
+        Receita receitaAtualizada = receitaService.salvarEntidade(receitaParaSalvar);
+
+        return ResponseEntity.ok(receitaAtualizada);
     }
 
     @PutMapping("/{id}/produzir")

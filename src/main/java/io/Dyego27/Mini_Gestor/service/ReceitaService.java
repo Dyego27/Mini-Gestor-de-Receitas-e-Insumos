@@ -1,6 +1,7 @@
 package io.Dyego27.Mini_Gestor.service;
 
 
+import io.Dyego27.Mini_Gestor.dto.ReceitaRequestDTO;
 import io.Dyego27.Mini_Gestor.model.Insumo;
 import io.Dyego27.Mini_Gestor.model.Receita;
 import io.Dyego27.Mini_Gestor.model.ReceitaInsumo;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ReceitaService {
@@ -24,14 +26,9 @@ public class ReceitaService {
 
 
     @Transactional
-    public Receita salvarReceita(Receita receita) {
-        Receita receitaSalva = receitaRepository.save(receita);
-        if (receitaSalva.getIngredientes() != null) {
-            for (ReceitaInsumo ingrediente : receitaSalva.getIngredientes()) {
-                ingrediente.setReceita(receitaSalva);
-            }
-        }
-        return receitaSalva;
+    public Receita salvarReceita(ReceitaRequestDTO dto) {
+        Receita receita = toEntity(dto);
+        return receitaRepository.save(receita);
     }
 
 
@@ -77,6 +74,45 @@ public class ReceitaService {
         }
 
         return true;
+    }
+
+
+    @Transactional
+    public Receita salvarEntidade(Receita receita) {
+        return receitaRepository.save(receita);
+    }
+
+
+    public Receita toEntity(ReceitaRequestDTO dto) {
+        Receita receita = new Receita();
+
+
+        receita.setNome(dto.getNome());
+        receita.setModoPreparo(dto.getModoPreparo());
+
+
+        if (dto.getIngredientes() != null) {
+            List<ReceitaInsumo> listaInsumos = dto.getIngredientes().stream()
+                    .map(ingredienteDto -> {
+                        ReceitaInsumo receitaInsumo = new ReceitaInsumo();
+
+
+                        Long insumoId = ingredienteDto.getInsumoId();
+                        Insumo insumo = insumoRepository.findById(insumoId)
+                                .orElseThrow(() -> new RuntimeException("Insumo não encontrado com ID: " + insumoId));
+
+
+                        receitaInsumo.setInsumo(insumo);
+                        receitaInsumo.setQuantidadeNecessaria(ingredienteDto.getQuantidadeNecessaria());
+                        receitaInsumo.setReceita(receita);
+
+                        return receitaInsumo;
+                    })
+                    .collect(Collectors.toList());
+
+            receita.setIngredientes(listaInsumos);
+        }
+        return receita;
     }
 }
 
