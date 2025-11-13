@@ -1,7 +1,9 @@
 package io.Dyego27.Mini_Gestor.service;
 
 
+import io.Dyego27.Mini_Gestor.dto.ReceitaInsumoResponseDTO;
 import io.Dyego27.Mini_Gestor.dto.ReceitaRequestDTO;
+import io.Dyego27.Mini_Gestor.dto.ReceitaResponseDTO;
 import io.Dyego27.Mini_Gestor.model.Insumo;
 import io.Dyego27.Mini_Gestor.model.Receita;
 import io.Dyego27.Mini_Gestor.model.ReceitaInsumo;
@@ -113,6 +115,36 @@ public class ReceitaService {
             receita.setIngredientes(listaInsumos);
         }
         return receita;
+    }
+    public ReceitaResponseDTO toResponseDTO(Receita receita) {
+        ReceitaResponseDTO dto = new ReceitaResponseDTO();
+
+        dto.setId(receita.getId());
+        dto.setNome(receita.getNome());
+        dto.setModoPreparo(receita.getModoPreparo());
+
+
+        if (receita.getIngredientes() != null) {
+            List<ReceitaInsumoResponseDTO> ingredientesDto = receita.getIngredientes().stream()
+                    .map(receitaInsumo -> {
+                        ReceitaInsumoResponseDTO insumoDto = new ReceitaInsumoResponseDTO();
+
+
+                        insumoDto.setInsumoId(receitaInsumo.getInsumo().getId());
+                        insumoDto.setQuantidadeNecessaria(receitaInsumo.getQuantidadeNecessaria());
+
+
+                        insumoDto.setInsumoNome(receitaInsumo.getInsumo().getNome());
+                        insumoDto.setUnidadeMedida(receitaInsumo.getInsumo().getUnidadeMedida());
+
+                        return insumoDto;
+                    })
+                    .collect(Collectors.toList());
+
+            dto.setIngredientes(ingredientesDto);
+        }
+
+        return dto;
     }
 }
 

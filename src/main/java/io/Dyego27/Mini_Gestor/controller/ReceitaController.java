@@ -1,12 +1,14 @@
 package io.Dyego27.Mini_Gestor.controller;
 
 import io.Dyego27.Mini_Gestor.dto.ReceitaRequestDTO;
+import io.Dyego27.Mini_Gestor.dto.ReceitaResponseDTO;
 import io.Dyego27.Mini_Gestor.model.Receita;
 import io.Dyego27.Mini_Gestor.service.ReceitaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -28,11 +30,6 @@ public class ReceitaController {
         return new ResponseEntity<>(novaReceita, HttpStatus.CREATED);
     }
 
-
-    @GetMapping
-    public ResponseEntity<List<Receita>> listarReceitas() {
-        return ResponseEntity.ok(receitaService.buscarTodas());
-    }
 
     // GET /api/receitas/{id}
     @GetMapping("/{id}")
@@ -91,5 +88,18 @@ public class ReceitaController {
 
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Erro de Estoque: " + e.getMessage());
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReceitaResponseDTO>> buscarTodas() {
+
+        List<Receita> receitas = receitaService.buscarTodas();
+
+
+        List<ReceitaResponseDTO> receitasDto = receitas.stream()
+                .map(receitaService::toResponseDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(receitasDto);
     }
 }
