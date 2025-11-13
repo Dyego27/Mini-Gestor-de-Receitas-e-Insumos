@@ -4,6 +4,7 @@ package io.Dyego27.Mini_Gestor.service;
 import io.Dyego27.Mini_Gestor.dto.ReceitaInsumoResponseDTO;
 import io.Dyego27.Mini_Gestor.dto.ReceitaRequestDTO;
 import io.Dyego27.Mini_Gestor.dto.ReceitaResponseDTO;
+import io.Dyego27.Mini_Gestor.exception.EstoqueInsuficienteException;
 import io.Dyego27.Mini_Gestor.model.Insumo;
 import io.Dyego27.Mini_Gestor.model.Receita;
 import io.Dyego27.Mini_Gestor.model.ReceitaInsumo;
@@ -46,7 +47,6 @@ public class ReceitaService {
         receitaRepository.deleteById(id);
     }
 
-    @Transactional
     public boolean darBaixaNoEstoque(Long receitaId, int quantidadeProduzida) {
         Optional<Receita> receitaOpt = receitaRepository.findById(receitaId);
 
@@ -59,18 +59,17 @@ public class ReceitaService {
         for (ReceitaInsumo ingrediente : receita.getIngredientes()) {
             Insumo insumo = ingrediente.getInsumo();
 
-
             double consumoTotal = ingrediente.getQuantidadeNecessaria() * quantidadeProduzida;
 
-
             if (insumo.getEstoqueAtual() < consumoTotal) {
-
-                throw new RuntimeException("Estoque insuficiente para o insumo: " + insumo.getNome());
+                // EXCEÇÃO PERSONALIZADA AGORA É LANÇADA AQUI
+                throw new EstoqueInsuficienteException(
+                        "Estoque insuficiente para o insumo: " + insumo.getNome() +
+                                ". Necessário: " + consumoTotal + ", Disponível: " + insumo.getEstoqueAtual()
+                );
             }
 
-
             insumo.setEstoqueAtual(insumo.getEstoqueAtual() - consumoTotal);
-
 
             insumoRepository.save(insumo);
         }
